@@ -535,7 +535,7 @@ function draw() {
             const cellX = offsetX + c * cellSize;
             const cellY = offsetY + r * cellSize;
             
-            // Optimizar: dibujar solo si es visible en el lienzo
+			// Optimizar: dibujar solo si es visible en el lienzo
             if (cellX + cellSize > headerW && cellX < canvas.width &&
                 cellY + cellSize > headerH && cellY < canvas.height) {
                 
@@ -548,8 +548,7 @@ function draw() {
     // 2. Dibujar líneas de cuadrícula
     ctx.strokeStyle = 'rgba(44, 53, 49, 0.15)'; // Líneas del excel suaves
     ctx.lineWidth = 1;
-    
-    // Líneas verticales
+     // Líneas verticales
     for (let c = 0; c <= gridCols; c++) {
         const x = offsetX + c * cellSize;
         if (x >= headerW && x <= canvas.width) {
@@ -559,7 +558,6 @@ function draw() {
             ctx.stroke();
         }
     }
-    
     // Líneas horizontales
     for (let r = 0; r <= gridRows; r++) {
         const y = offsetY + r * cellSize;
@@ -571,7 +569,7 @@ function draw() {
         }
     }
     
-    // 3. Dibujar símbolos de crochet
+    // 3. Dibujar símbolos de crochet (AQUÍ ESTÁ LA MAGIA CORREGIDA)
     for (let c = 0; c < gridCols; c++) {
         for (let r = 0; r < gridRows; r++) {
             const cell = grid[c][r];
@@ -580,29 +578,48 @@ function draw() {
             
             if (cell.symbolIndex >= 0 && !cell.isCovered) {
                 const H = SYMBOLS[cell.symbolIndex].heightInCells || 1;
-                const drawY = cellY - (H - 1) * cellSize;
-                const drawH = cellSize * H;
                 
-                if (cellX + cellSize > headerW && cellX < canvas.width &&
-                    drawY + drawH > headerH && drawY < canvas.height) {
+                // Encontrar el centro exacto de las celdas ocupadas según la rotación
+                let centerX = cellX + cellSize / 2;
+                let centerY = cellY + cellSize / 2;
+                
+                if (cell.rotation === 0) {
+                    centerY -= ((H - 1) * cellSize) / 2; // Crece hacia arriba
+                } else if (cell.rotation === 90) {
+                    centerX += ((H - 1) * cellSize) / 2; // Crece hacia la derecha
+                } else if (cell.rotation === 180) {
+                    centerY += ((H - 1) * cellSize) / 2; // Crece hacia abajo
+                } else if (cell.rotation === 270) {
+                    centerX -= ((H - 1) * cellSize) / 2; // Crece hacia la izquierda
+                }
+                
+                // El ancho y alto que se manda a dibujar es el original (como si estuviera de pie)
+                const originalW = cellSize;
+                const originalH = cellSize * H;
+                
+                // Ajustamos X e Y para que coincida con el centro que hemos calculado
+                const drawX = centerX - originalW / 2;
+                const drawY = centerY - originalH / 2;
+                
+                // Dibujar si está dentro de la pantalla
+                const maxDim = Math.max(originalW, originalH);
+                if (centerX + maxDim / 2 > headerW && centerX - maxDim / 2 < canvas.width &&
+                    centerY + maxDim / 2 > headerH && centerY - maxDim / 2 < canvas.height) {
                     
-                    drawSymbolInCell(ctx, cell.symbolIndex, cell.color, cell.rotation, cellX, drawY, cellSize, drawH);
+                    drawSymbolInCell(ctx, cell.symbolIndex, cell.color, cell.rotation, drawX, drawY, originalW, originalH);
                 }
             }
         }
     }
     
-    // 4. Dibujar CABECERAS CONGELADAS (Excel Style) a los bordes superior e izquierdo
-    
-    // Fondo de cabeceras horizontales y verticales
+    // 4. Dibujar CABECERAS CONGELADAS (Excel Style)
+	// Fondo de cabeceras horizontales y verticales
     ctx.fillStyle = '#E4DCD3';
-    ctx.fillRect(0, 0, canvas.width, headerH); // Col headers bg
-    ctx.fillRect(0, 0, headerW, canvas.height); // Row headers bg
-    
+    ctx.fillRect(0, 0, canvas.width, headerH); 
+    ctx.fillRect(0, 0, headerW, canvas.height); 
     // Esquina superior izquierda
     ctx.fillStyle = 'var(--primary)';
     ctx.fillRect(0, 0, headerW, headerH);
-    
     // Líneas divisorias de las cabeceras
     ctx.strokeStyle = 'var(--text-main)';
     ctx.lineWidth = 1.5;
@@ -616,7 +633,6 @@ function draw() {
     ctx.moveTo(0, headerH);
     ctx.lineTo(canvas.width, headerH);
     ctx.stroke();
-    
     // Dibujar textos y líneas divisorias internas de las cabeceras
     ctx.fillStyle = 'var(--text-main)';
     ctx.font = `bold ${Math.max(10, Math.floor(12 * Math.min(1.2, zoom)))}px Inter, sans-serif`;
@@ -626,19 +642,18 @@ function draw() {
     ctx.strokeStyle = 'rgba(44, 53, 49, 0.2)';
     ctx.lineWidth = 1;
     
-    // Letras de las columnas
+	// Letras de las columnas
     for (let c = 0; c < gridCols; c++) {
         const x = offsetX + c * cellSize;
         const nextX = x + cellSize;
         
         if (nextX > headerW && x < canvas.width) {
-            // Dibujar texto centrado en la columna
+			// Dibujar texto centrado en la columna
             const labelX = x + cellSize / 2;
             if (labelX > headerW) {
                 ctx.fillText(getColLabel(c), labelX, headerH / 2);
             }
-            
-            // Línea divisoria en la cabecera
+			// Línea divisoria en la cabecera
             if (nextX > headerW) {
                 ctx.beginPath();
                 ctx.moveTo(nextX, 0);
@@ -648,19 +663,18 @@ function draw() {
         }
     }
     
-    // Números de las filas
+	// Números de las filas
     for (let r = 0; r < gridRows; r++) {
         const y = offsetY + r * cellSize;
         const nextY = y + cellSize;
         
         if (nextY > headerH && y < canvas.height) {
-            // Dibujar texto centrado en la fila
+			// Dibujar texto centrado en la fila
             const labelY = y + cellSize / 2;
             if (labelY > headerH) {
                 ctx.fillText(r + 1, headerW / 2, labelY);
             }
-            
-            // Línea divisoria en la cabecera
+			// Línea divisoria en la cabecera
             if (nextY > headerH) {
                 ctx.beginPath();
                 ctx.moveTo(0, nextY);
@@ -670,7 +684,7 @@ function draw() {
         }
     }
     
-    // Emoji de ovillo en la esquina
+	// Emoji de ovillo en la esquina
     ctx.fillStyle = '#FFFFFF';
     ctx.font = `${Math.max(12, Math.floor(14 * Math.min(1.2, zoom)))}px sans-serif`;
     ctx.fillText('🧶', headerW / 2, headerH / 2);
@@ -700,18 +714,45 @@ function floodFillBg(startCol, startRow, targetBg, replacementBg) {
 function clearCellData(c, r) {
     if (c < 0 || c >= gridCols || r < 0 || r >= gridRows) return;
     const cell = grid[c][r];
+    
     if (cell.isCovered && cell.coverParent) {
-        // Limpiar el padre
+        // Si tocamos con la goma una parte del "cuerpo", limpiamos desde el "pie" (padre)
         const pCol = cell.coverParent.col;
         const pRow = cell.coverParent.row;
+        
+        // Evitamos bucles infinitos de borrado reseteando esta celda antes de llamar al padre
+        grid[c][r] = {
+            symbolIndex: -1,
+            rotation: 0,
+            color: activeColor,
+            bgColor: DEFAULT_CELL_BG
+        };
+        
         clearCellData(pCol, pRow);
+        
     } else if (cell.symbolIndex >= 0) {
+        // Es un "pie" (celda base), así que leemos su tamaño y hacia dónde está rotada
         const H = SYMBOLS[cell.symbolIndex].heightInCells || 1;
-        // Limpiar celdas cubiertas arriba
+        const rot = cell.rotation || 0;
+        
+        let dCol = 0;
+        let dRow = -1; // Por defecto: hacia arriba
+        
+        if (rot === 90) {
+            dCol = 1;  dRow = 0;  // Derecha
+        } else if (rot === 180) {
+            dCol = 0;  dRow = 1;  // Abajo
+        } else if (rot === 270) {
+            dCol = -1; dRow = 0;  // Izquierda
+        }
+        
+        // 1. Limpiar las celdas cubiertas (el cuerpo) en la dirección correcta
         for (let i = 1; i < H; i++) {
-            const targetR = r - i;
-            if (targetR >= 0) {
-                grid[c][targetR] = {
+            const targetC = c + (i * dCol);
+            const targetR = r + (i * dRow);
+            
+            if (targetC >= 0 && targetC < gridCols && targetR >= 0 && targetR < gridRows) {
+                grid[targetC][targetR] = {
                     symbolIndex: -1,
                     rotation: 0,
                     color: activeColor,
@@ -719,15 +760,17 @@ function clearCellData(c, r) {
                 };
             }
         }
-        // Limpiar base
+        
+        // 2. Limpiar la celda base (el pie)
         grid[c][r] = {
             symbolIndex: -1,
             rotation: 0,
             color: activeColor,
             bgColor: DEFAULT_CELL_BG
         };
+        
     } else {
-        // Es una celda vacía normal, la reseteamos
+        // Es una celda vacía normal, simplemente la reseteamos a los valores por defecto
         grid[c][r] = {
             symbolIndex: -1,
             rotation: 0,
@@ -753,11 +796,26 @@ function paintCellAt(mx, my) {
             const symbol = SYMBOLS[activeSymbolIndex];
             const H = symbol.heightInCells || 1;
             
+            // 1. Definir hacia dónde "crece" la figura dependiendo de la rotación
+            let dCol = 0;
+            let dRow = -1; // Por defecto (0 grados): hacia arriba
+
+            if (activeRotation === 90) {
+                dCol = 1;  dRow = 0;  // 90 grados: hacia la derecha
+            } else if (activeRotation === 180) {
+                dCol = 0;  dRow = 1;  // 180 grados: hacia abajo
+            } else if (activeRotation === 270) {
+                dCol = -1; dRow = 0;  // 270 grados: hacia la izquierda
+            }
+            
             // Limpiar celdas en el nuevo rango para evitar colisiones
             for (let i = 0; i < H; i++) {
-                const targetR = row - i;
-                if (targetR >= 0) {
-                    clearCellData(col, targetR);
+                const targetC = col + (i * dCol);
+                const targetR = row + (i * dRow);
+                
+                // Comprobar que no nos salimos de los límites de la cuadrícula
+                if (targetC >= 0 && targetC < gridCols && targetR >= 0 && targetR < gridRows) {
+                    clearCellData(targetC, targetR);
                 }
             }
             
@@ -771,11 +829,13 @@ function paintCellAt(mx, my) {
                 spanH: H
             };
             
-            // Establecer celdas cubiertas
+            // Establecer celdas cubiertas (las que ocupa el resto del tamaño de la figura)
             for (let i = 1; i < H; i++) {
-                const targetR = row - i;
-                if (targetR >= 0) {
-                    grid[col][targetR] = {
+                const targetC = col + (i * dCol);
+                const targetR = row + (i * dRow);
+                
+                if (targetC >= 0 && targetC < gridCols && targetR >= 0 && targetR < gridRows) {
+                    grid[targetC][targetR] = {
                         symbolIndex: -1,
                         rotation: 0,
                         color: activeColor,
@@ -1112,9 +1172,28 @@ function exportPatternAsPNG() {
             // Dibujar símbolo si existe
             if (cell.symbolIndex >= 0 && !cell.isCovered) {
                 const H = SYMBOLS[cell.symbolIndex].heightInCells || 1;
-                const drawY = cellY - (H - 1) * exportCellSize;
-                const drawH = exportCellSize * H;
-                drawSymbolInCell(tCtx, cell.symbolIndex, cell.color, cell.rotation, cellX, drawY, exportCellSize, drawH);
+                
+                // Encontrar el centro según la rotación
+                let centerX = cellX + exportCellSize / 2;
+                let centerY = cellY + exportCellSize / 2;
+                
+                if (cell.rotation === 0) {
+                    centerY -= ((H - 1) * exportCellSize) / 2;
+                } else if (cell.rotation === 90) {
+                    centerX += ((H - 1) * exportCellSize) / 2;
+                } else if (cell.rotation === 180) {
+                    centerY += ((H - 1) * exportCellSize) / 2;
+                } else if (cell.rotation === 270) {
+                    centerX -= ((H - 1) * exportCellSize) / 2;
+                }
+                
+                const originalW = exportCellSize;
+                const originalH = exportCellSize * H;
+                
+                const drawX = centerX - originalW / 2;
+                const drawY = centerY - originalH / 2;
+                
+                drawSymbolInCell(tCtx, cell.symbolIndex, cell.color, cell.rotation, drawX, drawY, originalW, originalH);
             }
         }
     }
