@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100%" height="100%">
+  <!-- Fondo Negro -->
+  <rect width="100" height="100" fill="#000000"/>
+  
+  <!-- Cadeneta (Contorno Elíptico Hueco) -->
+  <ellipse cx="50" cy="50" rx="38" ry="21" fill="none" stroke="#ffffff" stroke-width="7"/>
+</svg>

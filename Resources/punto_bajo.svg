@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100%" height="100%">
+  <!-- Fondo Negro -->
+  <rect width="100" height="100" fill="#000000"/>
+  
+  <!-- Símbolo Punto Bajo (X) -->
+  <g fill="none" stroke="#ffffff" stroke-width="12" stroke-linecap="round">
+    <!-- Diagonal de arriba-izquierda a abajo-derecha -->
+    <line x1="25" y1="25" x2="75" y2="75" />
+    <!-- Diagonal de abajo-izquierda a arriba-derecha -->
+    <line x1="25" y1="75" x2="75" y2="25" />
+  </g>
+</svg>
