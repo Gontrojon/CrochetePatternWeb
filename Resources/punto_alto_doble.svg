@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 300" width="100%" height="100%">
+  <!-- Fondo Negro -->
+  <rect width="100" height="300" fill="#000000"/>
+  
+  <!-- Símbolo Punto Alto Doble -->
+  <g fill="none" stroke="#ffffff" stroke-width="12" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Barra horizontal superior -->
+    <line x1="20" y1="25" x2="80" y2="25" />
+    
+    <!-- Línea vertical principal -->
+    <line x1="50" y1="25" x2="50" y2="275" />
+    
+    <!-- Primera barra diagonal central (superior) -->
+    <line x1="23" y1="110" x2="77" y2="170" />
+    
+    <!-- Segunda barra diagonal central (inferior) -->
+    <line x1="23" y1="165" x2="77" y2="225" />
+  </g>
+</svg>
