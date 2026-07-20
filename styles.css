@@ -753,3 +753,12 @@ canvas#gridCanvas {
         display: flex;
     }
 }
+
+/* SVG icons auto-scale inside preview/legend wrappers */
+.symbol-preview-icon svg,
+.legend-icon-wrapper svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
