@@ -535,6 +535,7 @@ function draw() {
             const cellX = offsetX + c * cellSize;
             const cellY = offsetY + r * cellSize;
             
+			// Optimizar: dibujar solo si es visible en el lienzo
             if (cellX + cellSize > headerW && cellX < canvas.width &&
                 cellY + cellSize > headerH && cellY < canvas.height) {
                 
@@ -545,9 +546,9 @@ function draw() {
     }
     
     // 2. Dibujar líneas de cuadrícula
-    ctx.strokeStyle = 'rgba(44, 53, 49, 0.15)'; 
+    ctx.strokeStyle = 'rgba(44, 53, 49, 0.15)'; // Líneas del excel suaves
     ctx.lineWidth = 1;
-    
+     // Líneas verticales
     for (let c = 0; c <= gridCols; c++) {
         const x = offsetX + c * cellSize;
         if (x >= headerW && x <= canvas.width) {
@@ -557,7 +558,7 @@ function draw() {
             ctx.stroke();
         }
     }
-    
+    // Líneas horizontales
     for (let r = 0; r <= gridRows; r++) {
         const y = offsetY + r * cellSize;
         if (y >= headerH && y <= canvas.height) {
@@ -612,13 +613,14 @@ function draw() {
     }
     
     // 4. Dibujar CABECERAS CONGELADAS (Excel Style)
+	// Fondo de cabeceras horizontales y verticales
     ctx.fillStyle = '#E4DCD3';
     ctx.fillRect(0, 0, canvas.width, headerH); 
     ctx.fillRect(0, 0, headerW, canvas.height); 
-    
+    // Esquina superior izquierda
     ctx.fillStyle = 'var(--primary)';
     ctx.fillRect(0, 0, headerW, headerH);
-    
+    // Líneas divisorias de las cabeceras
     ctx.strokeStyle = 'var(--text-main)';
     ctx.lineWidth = 1.5;
     
@@ -631,7 +633,7 @@ function draw() {
     ctx.moveTo(0, headerH);
     ctx.lineTo(canvas.width, headerH);
     ctx.stroke();
-    
+    // Dibujar textos y líneas divisorias internas de las cabeceras
     ctx.fillStyle = 'var(--text-main)';
     ctx.font = `bold ${Math.max(10, Math.floor(12 * Math.min(1.2, zoom)))}px Inter, sans-serif`;
     ctx.textAlign = 'center';
@@ -640,15 +642,18 @@ function draw() {
     ctx.strokeStyle = 'rgba(44, 53, 49, 0.2)';
     ctx.lineWidth = 1;
     
+	// Letras de las columnas
     for (let c = 0; c < gridCols; c++) {
         const x = offsetX + c * cellSize;
         const nextX = x + cellSize;
         
         if (nextX > headerW && x < canvas.width) {
+			// Dibujar texto centrado en la columna
             const labelX = x + cellSize / 2;
             if (labelX > headerW) {
                 ctx.fillText(getColLabel(c), labelX, headerH / 2);
             }
+			// Línea divisoria en la cabecera
             if (nextX > headerW) {
                 ctx.beginPath();
                 ctx.moveTo(nextX, 0);
@@ -658,15 +663,18 @@ function draw() {
         }
     }
     
+	// Números de las filas
     for (let r = 0; r < gridRows; r++) {
         const y = offsetY + r * cellSize;
         const nextY = y + cellSize;
         
         if (nextY > headerH && y < canvas.height) {
+			// Dibujar texto centrado en la fila
             const labelY = y + cellSize / 2;
             if (labelY > headerH) {
                 ctx.fillText(r + 1, headerW / 2, labelY);
             }
+			// Línea divisoria en la cabecera
             if (nextY > headerH) {
                 ctx.beginPath();
                 ctx.moveTo(0, nextY);
@@ -676,6 +684,7 @@ function draw() {
         }
     }
     
+	// Emoji de ovillo en la esquina
     ctx.fillStyle = '#FFFFFF';
     ctx.font = `${Math.max(12, Math.floor(14 * Math.min(1.2, zoom)))}px sans-serif`;
     ctx.fillText('🧶', headerW / 2, headerH / 2);
