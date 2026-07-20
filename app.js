@@ -705,18 +705,45 @@ function floodFillBg(startCol, startRow, targetBg, replacementBg) {
 function clearCellData(c, r) {
     if (c < 0 || c >= gridCols || r < 0 || r >= gridRows) return;
     const cell = grid[c][r];
+    
     if (cell.isCovered && cell.coverParent) {
-        // Limpiar el padre
+        // Si tocamos con la goma una parte del "cuerpo", limpiamos desde el "pie" (padre)
         const pCol = cell.coverParent.col;
         const pRow = cell.coverParent.row;
+        
+        // Evitamos bucles infinitos de borrado reseteando esta celda antes de llamar al padre
+        grid[c][r] = {
+            symbolIndex: -1,
+            rotation: 0,
+            color: activeColor,
+            bgColor: DEFAULT_CELL_BG
+        };
+        
         clearCellData(pCol, pRow);
+        
     } else if (cell.symbolIndex >= 0) {
+        // Es un "pie" (celda base), así que leemos su tamaño y hacia dónde está rotada
         const H = SYMBOLS[cell.symbolIndex].heightInCells || 1;
-        // Limpiar celdas cubiertas arriba
+        const rot = cell.rotation || 0;
+        
+        let dCol = 0;
+        let dRow = -1; // Por defecto: hacia arriba
+        
+        if (rot === 90) {
+            dCol = 1;  dRow = 0;  // Derecha
+        } else if (rot === 180) {
+            dCol = 0;  dRow = 1;  // Abajo
+        } else if (rot === 270) {
+            dCol = -1; dRow = 0;  // Izquierda
+        }
+        
+        // 1. Limpiar las celdas cubiertas (el cuerpo) en la dirección correcta
         for (let i = 1; i < H; i++) {
-            const targetR = r - i;
-            if (targetR >= 0) {
-                grid[c][targetR] = {
+            const targetC = c + (i * dCol);
+            const targetR = r + (i * dRow);
+            
+            if (targetC >= 0 && targetC < gridCols && targetR >= 0 && targetR < gridRows) {
+                grid[targetC][targetR] = {
                     symbolIndex: -1,
                     rotation: 0,
                     color: activeColor,
@@ -724,15 +751,17 @@ function clearCellData(c, r) {
                 };
             }
         }
-        // Limpiar base
+        
+        // 2. Limpiar la celda base (el pie)
         grid[c][r] = {
             symbolIndex: -1,
             rotation: 0,
             color: activeColor,
             bgColor: DEFAULT_CELL_BG
         };
+        
     } else {
-        // Es una celda vacía normal, la reseteamos
+        // Es una celda vacía normal, simplemente la reseteamos a los valores por defecto
         grid[c][r] = {
             symbolIndex: -1,
             rotation: 0,
