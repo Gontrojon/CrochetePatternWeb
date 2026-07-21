@@ -29,23 +29,23 @@ const STITCH_SVGS = {
     <line x1="25" y1="120" x2="75" y2="180" />
   </g>
 </svg>`,
-    punto_alto_doble: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 300" width="100%" height="100%">
-  <rect width="100" height="300" fill="#000000"/>
+    punto_alto_doble: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 400" width="100%" height="100%">
+  <rect width="100" height="400" fill="#000000"/>
   <g fill="none" stroke="#ffffff" stroke-width="12" stroke-linecap="round" stroke-linejoin="round">
     <line x1="20" y1="25" x2="80" y2="25" />
-    <line x1="50" y1="25" x2="50" y2="275" />
-    <line x1="23" y1="110" x2="77" y2="170" />
-    <line x1="23" y1="165" x2="77" y2="225" />
+    <line x1="50" y1="25" x2="50" y2="375" />
+    <line x1="23" y1="142" x2="77" y2="202" />
+    <line x1="23" y1="197" x2="77" y2="257" />
   </g>
 </svg>`,
-    punto_alto_triple: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 300" width="100%" height="100%">
-  <rect width="100" height="300" fill="#000000"/>
+    punto_alto_triple: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 500" width="100%" height="100%">
+  <rect width="100" height="500" fill="#000000"/>
   <g fill="none" stroke="#ffffff" stroke-width="12" stroke-linecap="round" stroke-linejoin="round">
     <line x1="20" y1="25" x2="80" y2="25" />
-    <line x1="50" y1="25" x2="50" y2="275" />
-    <line x1="23" y1="85" x2="77" y2="145" />
-    <line x1="23" y1="140" x2="77" y2="200" />
-    <line x1="23" y1="195" x2="77" y2="255" />
+    <line x1="50" y1="25" x2="50" y2="475" />
+    <line x1="23" y1="165" x2="77" y2="225" />
+    <line x1="23" y1="220" x2="77" y2="280" />
+    <line x1="23" y1="275" x2="77" y2="335" />
   </g>
 </svg>`
 };
